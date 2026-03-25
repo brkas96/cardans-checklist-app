@@ -44,7 +44,7 @@ export const useServices = () => {
   useEffect(() => {
     if (firestore) {
       // Use Firestore
-      const q = query(collection(firestore, 'services'), orderBy('date', 'desc'));
+      const q = query(collection(firestore!, 'services'), orderBy('date', 'desc'));
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const servicesData: Service[] = [];
         querySnapshot.forEach((doc) => {
@@ -100,7 +100,7 @@ export const useServices = () => {
       notes: '',
     };
     if (firestore) {
-      const docRef = await addDoc(collection(firestore, 'services'), newService);
+      const docRef = await addDoc(collection(firestore!, 'services'), newService);
       return docRef.id;
     } else {
       const id = generateId();
@@ -112,7 +112,7 @@ export const useServices = () => {
 
   const updateService = useCallback(async (id: string, updates: Partial<Service>) => {
     if (firestore) {
-      await updateDoc(doc(firestore, 'services', id), updates);
+      await updateDoc(doc(firestore!, 'services', id), updates);
     } else {
       setServices(prev =>
         prev.map(service =>
@@ -129,7 +129,7 @@ export const useServices = () => {
         const updatedItems = service.items.map(item =>
           item.id === itemId ? { ...item, completed: !item.completed } : item
         );
-        await updateDoc(doc(firestore, 'services', serviceId), { items: updatedItems });
+        await updateDoc(doc(firestore!, 'services', serviceId), { items: updatedItems });
       }
     } else {
       setServices(prev =>
@@ -149,7 +149,7 @@ export const useServices = () => {
 
   const deleteService = useCallback(async (id: string) => {
     if (firestore) {
-      await deleteDoc(doc(firestore, 'services', id));
+      await deleteDoc(doc(firestore!, 'services', id));
     } else {
       setServices(prev => prev.filter(service => service.id !== id));
     }
@@ -175,7 +175,7 @@ export const useServices = () => {
           if (firestore) {
             // Add to Firestore
             imported.forEach(async (service) => {
-              await addDoc(collection(firestore, 'services'), { ...service, id: undefined });
+              await addDoc(collection(firestore!, 'services'), { ...service, id: undefined });
             });
           } else {
             setServices(prev => [...prev, ...imported.map(migrateService)]);

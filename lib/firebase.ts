@@ -1,6 +1,9 @@
 import { initializeApp } from 'firebase/app';
+import type { Auth } from 'firebase/auth';
 import { getAuth } from 'firebase/auth';
+import type { Firestore } from 'firebase/firestore';
 import { getFirestore } from 'firebase/firestore';
+import type { Database } from 'firebase/database';
 import { getDatabase } from 'firebase/database';
 
 // Configuração do Firebase (usar variáveis de ambiente no .env.local)
@@ -15,9 +18,9 @@ const firebaseConfig = {
 };
 
 let app;
-let auth;
-let db;
-let firestore;
+let auth: Auth | undefined;
+let db: Database | undefined;
+let firestore: Firestore | undefined;
 
 try {
   app = initializeApp(firebaseConfig);

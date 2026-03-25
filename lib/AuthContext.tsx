@@ -58,12 +58,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
       return;
     }
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth!, async (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser);
         // Fetch user profile from Firestore
         if (firestore) {
-          const userDoc = await getDoc(doc(firestore, 'users', firebaseUser.uid));
+          const userDoc = await getDoc(doc(firestore!, 'users', firebaseUser.uid));
           if (userDoc.exists()) {
             setProfile(userDoc.data() as UserProfile);
           } else {
@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               email: firebaseUser.email!,
               role: 'user',
             };
-            await setDoc(doc(firestore, 'users', firebaseUser.uid), newProfile);
+            await setDoc(doc(firestore!, 'users', firebaseUser.uid), newProfile);
             setProfile(newProfile);
           }
         }
@@ -102,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return;
     }
-    await signInWithEmailAndPassword(auth, email, password);
+    await signInWithEmailAndPassword(auth!, email, password);
   };
 
   const logout = async () => {
@@ -112,7 +112,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.removeItem('currentUser');
       return;
     }
-    await signOut(auth);
+    await signOut(auth!);
   };
 
   const createUser = async (email: string, password: string, role: 'admin' | 'user') => {
@@ -136,18 +136,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
     const { collection, getDocs } = await import('firebase/firestore');
-    const usersRef = collection(firestore, 'users');
+    const usersRef = collection(firestore!, 'users');
     const usersSnapshot = await getDocs(usersRef);
     if (!usersSnapshot.empty && profile?.role !== 'admin') {
       throw new Error('Apenas administradores podem criar usuários');
     }
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(auth!, email, password);
     const newProfile: UserProfile = {
       uid: userCredential.user.uid,
       email,
       role: usersSnapshot.empty ? 'admin' : role, // First user is admin
     };
-    await setDoc(doc(firestore, 'users', userCredential.user.uid), newProfile);
+    await setDoc(doc(firestore!, 'users', userCredential.user.uid), newProfile);
   };
 
   return (
